@@ -1,9 +1,19 @@
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from gtts import gTTS
 import os
 from fastapi.responses import FileResponse, JSONResponse
 
 app = FastAPI()
+
+# CORS Middleware Add Kiya
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Specific domains ke liye ["https://toolart.site"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def home():
@@ -16,7 +26,6 @@ async def text_to_speech(text: str, lang: str = Query(default="en", description=
         tts = gTTS(text=text, lang=lang)
         tts.save(file_path)
 
-        # JSON response ke saath file ka link bhi de sakte hain
         return JSONResponse(content={"message": "Speech generated successfully!", "download_url": "/download-audio"})
     
     except Exception as e:
